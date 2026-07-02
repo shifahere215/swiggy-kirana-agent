@@ -32,4 +32,4 @@ It demonstrates a powerful, proactive AI agent that understands household consum
 ## Demo
 Here is a screen recording of the Kirana Agent natively handling user requests like creating House Party event baskets and handling Geo-displacement:
 
-![Kirana Agent Demo](public/kirana_demo_video.webp)
+<img src="./public/kirana_demo_video.webp" alt="Kirana Agent Demo" width="600" />
