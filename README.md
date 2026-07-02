@@ -30,4 +30,6 @@ It demonstrates a powerful, proactive AI agent that understands household consum
 4. Navigate to `http://localhost:3000/agent` to interact with Kirana!
 
 ## Demo
-Please refer to `artifacts/kirana_agent_demo.webp` in the root (or provided locally) for a full walkthrough of the agent handling the House Party, Geo-Displacement, and Household Graph scenarios.
+Here is a screen recording of the Kirana Agent natively handling user requests like creating House Party event baskets and handling Geo-displacement:
+
+![Kirana Agent Demo](public/kirana_demo_video.webp)
