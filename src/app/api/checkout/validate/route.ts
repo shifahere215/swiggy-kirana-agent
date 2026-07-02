@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ sessionEventId: sessionEvent.id, isAnomaly: false });
   }
 
-  // Anomaly check: item_count >= 2x 90-day avg
+  let avgItems = 3; // Default for new users
   const pastSessions = await prisma.sessionEvent.findMany({
     where: {
       user_id: userId,
@@ -35,17 +35,17 @@ export async function POST(request: Request) {
   if (pastSessions.length > 0) {
     const validPastSessions = pastSessions.filter(s => s.item_count !== null);
     if (validPastSessions.length > 0) {
-      const avgItems = validPastSessions.reduce((sum, s) => sum + (s.item_count || 0), 0) / validPastSessions.length;
-      
-      if (itemCount >= avgItems * 2) {
-        // Flag anomaly
-        await prisma.sessionEvent.update({
-          where: { id: sessionEvent.id },
-          data: { anomaly_flagged: true }
-        });
-        return NextResponse.json({ sessionEventId: sessionEvent.id, isAnomaly: true });
-      }
+      avgItems = validPastSessions.reduce((sum, s) => sum + (s.item_count || 0), 0) / validPastSessions.length;
     }
+  }
+
+  if (itemCount >= avgItems * 2) {
+    // Flag anomaly
+    await prisma.sessionEvent.update({
+      where: { id: sessionEvent.id },
+      data: { anomaly_flagged: true }
+    });
+    return NextResponse.json({ sessionEventId: sessionEvent.id, isAnomaly: true });
   }
 
   return NextResponse.json({ sessionEventId: sessionEvent.id, isAnomaly: false });
