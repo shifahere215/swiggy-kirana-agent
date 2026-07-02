@@ -1,5 +1,5 @@
 import { openai } from '@ai-sdk/openai';
-import { streamText, generateText } from 'ai';
+import { streamText } from 'ai';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -10,11 +10,10 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
 
     if (!process.env.OPENAI_API_KEY) {
-      // Mock stream if no key, simulating the PRD demo
       const encoder = new TextEncoder();
       const stream = new ReadableStream({
         async start(controller) {
-          const lastMsg = messages[messages.length - 1]?.content.toLowerCase() || '';
+          const lastMsg = messages[messages.length - 1]?.content?.toLowerCase() || '';
           let mockText = "I'm your Kirana Agent. I can help you manage your household restocking.";
           
           if (lastMsg.includes('house party') || lastMsg.includes('sprite')) {
@@ -28,19 +27,19 @@ export async function POST(req: Request) {
           }
 
           const words = mockText.split(' ');
-          for (let word of words) {
+          for (const word of words) {
             controller.enqueue(encoder.encode(`0:"${word} "\n`));
-            await new Promise(r => setTimeout(r, 40));
+            await new Promise((r) => setTimeout(r, 40));
           }
           controller.close();
-        },
+        }
       });
 
       return new Response(stream, {
         headers: {
           'Content-Type': 'text/plain; charset=utf-8',
           'x-vercel-ai-data-stream': 'v1'
-        },
+        }
       });
     }
 
@@ -62,46 +61,46 @@ Keep responses concise, warm, and natural. Do not be overly robotic. Use the pro
         get_orders: {
           description: 'Reads recent order history to infer patterns and establish baselines.',
           parameters: z.object({
-            profileName: z.string().describe('The name of the profile (e.g., Home, Mum)'),
+            profileName: z.string().describe('The name of the profile (e.g., Home, Mum)')
           }),
           execute: async ({ profileName }) => {
             if (profileName.toLowerCase() === 'home') {
               return { items: ['Coffee powder (every 3 weeks)', 'Milk (daily)', 'Sanitary pads (every 4 weeks)'] };
             }
             return { items: [] };
-          },
+          }
         },
         create_profile: {
           description: 'Creates a new household graph profile for a new delivery address.',
           parameters: z.object({
             profileName: z.string().describe('The name of the new profile (e.g., Arjun)'),
-            address: z.string(),
+            address: z.string()
           }),
           execute: async ({ profileName, address }) => {
             return { status: 'success', message: `Profile ${profileName} created for ${address}.` };
-          },
+          }
         },
         save_event_basket: {
           description: 'Saves a bulk order anomaly as an event basket (e.g., House Party) for one-tap repeat.',
           parameters: z.object({
             eventName: z.string(),
-            items: z.array(z.string()),
+            items: z.array(z.string())
           }),
           execute: async ({ eventName, items }) => {
             return { status: 'success', message: `Event ${eventName} saved with ${items.length} items.` };
-          },
+          }
         },
         pause_nudges: {
           description: 'Pauses restocking nudges for a specific profile (e.g., during geo-displacement).',
           parameters: z.object({
             profileName: z.string(),
-            duration: z.string(),
+            duration: z.string()
           }),
           execute: async ({ profileName, duration }) => {
             return { status: 'success', message: `Nudges paused for ${profileName} for ${duration}.` };
-          },
-        },
-      },
+          }
+        }
+      }
     });
 
     return result.toDataStreamResponse();
