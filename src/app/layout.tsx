@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from 'next/link';
-import { Home, ShoppingCart, User } from 'lucide-react';
+import { Home, ShoppingCart, User, Bot } from 'lucide-react';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +26,10 @@ export default function RootLayout({
             <Link href="/" className="nav-item">
               <Home size={24} />
               <span>Home</span>
+            </Link>
+            <Link href="/agent" className="nav-item" style={{ color: 'var(--primary)' }}>
+              <Bot size={24} />
+              <span>Agent</span>
             </Link>
             <Link href="/cart" className="nav-item" style={{ position: 'relative' }}>
               <ShoppingCart size={24} />
